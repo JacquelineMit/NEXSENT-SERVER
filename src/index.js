@@ -4,9 +4,13 @@ import cors from "cors";
 import jsonfile from "jsonfile";
 import path from "path";
 import cookieParser from "cookie-parser";
+import { v4 as uuidv4 } from "uuid";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser("my-secret-key"));
 
 // Middleware для парсинга JSON в теле запроса
@@ -56,5 +60,29 @@ app.post("/send", async (req, res) => {
 
   console.log("Cookie is", req.cookies.name);
 
+  res.json({ result: "yes" });
+});
+
+app.post("/user/create", async (req, res) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const id = uuidv4();
+  const users = await readUsers();
+  const user = { id, name, email };
+  users.push(user);
+  await writeUsers(users);
+  console.log("create");
+  res.json({ result: user });
+});
+app.put("/user/update", async (req, res) => {
+  console.log("update");
+  res.json({ result: "yes" });
+});
+app.get("/user/get", async (req, res) => {
+  console.log("get");
+  res.json({ result: "yes" });
+});
+app.delete("/user/delete", async (req, res) => {
+  console.log("delete");
   res.json({ result: "yes" });
 });
