@@ -3,9 +3,11 @@ import express from "express";
 import cors from "cors";
 import jsonfile from "jsonfile";
 import path from "path";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(cookieParser("my-secret-key"));
 
 // Middleware для парсинга JSON в теле запроса
 app.use(express.json());
@@ -43,6 +45,16 @@ app.post("/send", async (req, res) => {
   const users = await readUsers();
   users.push({ name, email });
   await writeUsers(users);
-  console.log(req.body);
+
+  /*
+  res.cookie("name", name, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+  });
+  */
+
+  console.log("Cookie is", req.cookies.name);
+
   res.json({ result: "yes" });
 });
