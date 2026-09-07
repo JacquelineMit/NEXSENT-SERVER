@@ -76,6 +76,14 @@ app.post("/user/create", async (req, res) => {
 });
 app.put("/user/update", async (req, res) => {
   console.log("update");
+  const name = req.body.name;
+  const email = req.body.email;
+  const id = req.body.id;
+  const users = await readUsers();
+  const userIndex = users.findIndex((user) => user.id === id);
+  const updatedUser = { ...users[userIndex], name, email };
+  users[userIndex] = updatedUser;
+  await writeUsers(users);
   res.json({ result: "yes" });
 });
 app.get("/user/get", async (req, res) => {
