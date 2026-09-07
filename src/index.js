@@ -88,6 +88,12 @@ app.put("/user/update", async (req, res) => {
 });
 app.get("/user/get", async (req, res) => {
   console.log("get");
+  const id = req.body.id;
+  const users = await readUsers();
+  const user = users.findIndex((user) => user.id === id);
+  if (!user) {
+    return res.status(404).json({ result: "User not found" });
+  }
   res.json({ result: "yes" });
 });
 app.delete("/user/delete", async (req, res) => {
