@@ -98,5 +98,12 @@ app.get("/user/get", async (req, res) => {
 });
 app.delete("/user/delete", async (req, res) => {
   console.log("delete");
+  const id = req.body.id;
+  const users = await readUsers();
+  const index = users.findIndex((user) => user.id === id);
+  if (index !== -1) {
+    const user = users.splice(index, 1);
+    res.send(user);
+  }
   res.json({ result: "yes" });
 });
