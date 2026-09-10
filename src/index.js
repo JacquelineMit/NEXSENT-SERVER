@@ -28,11 +28,11 @@ app.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
 
-const dataFile = path.resolve("users.json");
+const usersDb = path.resolve("db/users.json");
 
 async function readUsers() {
   try {
-    return await jsonfile.readFile(dataFile);
+    return await jsonfile.readFile(usersDb);
   } catch (err) {
     if (err.code === "ENOENT") return [];
     throw err;
@@ -40,7 +40,7 @@ async function readUsers() {
 }
 
 async function writeUsers(users) {
-  await jsonfile.writeFile(dataFile, users, { spaces: 2 });
+  await jsonfile.writeFile(usersDb, users, { spaces: 2 });
 }
 
 app.post("/send", async (req, res) => {
