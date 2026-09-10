@@ -17,7 +17,10 @@ app.use(cookieParser("my-secret-key"));
 app.use(express.json());
 
 // enabling CORS for any unknown origin(https://xyz.example.com)
-app.use(cors());
+app.use(cors({
+  origin: "http://127.0.0.1:5501",
+  credentials: true,
+}));
 
 // Простой проверочный маршрут
 app.get("/health", (req, res) => {
@@ -50,13 +53,11 @@ app.post("/send", async (req, res) => {
   users.push({ name, email });
   await writeUsers(users);
 
-  /*
   res.cookie("name", name, {
     httpOnly: true,
     secure: false,
-    sameSite: "none",
+    sameSite: "lax",
   });
-  */
 
   console.log("Cookie is", req.cookies.name);
 
