@@ -5,7 +5,9 @@ import jsonfile from "jsonfile";
 import path from "path";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
+import multer from "multer";
 
+const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -17,10 +19,7 @@ app.use(cookieParser("my-secret-key"));
 app.use(express.json());
 
 // enabling CORS for any unknown origin(https://xyz.example.com)
-app.use(cors({
-  origin: "http://127.0.0.1:5501",
-  credentials: true,
-}));
+app.use(cors());
 
 // Простой проверочный маршрут
 app.get("/health", (req, res) => {
@@ -104,7 +103,28 @@ app.delete("/user/delete", async (req, res) => {
   const index = users.findIndex((user) => user.id === id);
   if (index !== -1) {
     const user = users.splice(index, 1);
-    res.send(user);
+    await writeUsers(users);
+    console.log(users);
   }
+  res.json({ result: "yes" });
+});
+
+app.get("/users/get", async (req, res) => {
+  console.log("get");
+  const users = await readUsers();
+  res.json({ result: users });
+});
+
+app.post("/user/signup", upload.none(), async (req, res) => {
+  const id = uuidv4();
+  const name = req.body.name;
+  const password = req.body.password;
+  const email = req.body.email;
+  const users = await readUsers();
+  const user = { id, name, password, email };
+  console.log(users);
+  users.push(user);
+  await writeUsers(users);
+  console.log("Signup");
   res.json({ result: "yes" });
 });
