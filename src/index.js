@@ -6,6 +6,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
+import { hashPassword, verifyPassword } from "./utils/password.js";
 
 const upload = multer();
 const app = express();
@@ -19,7 +20,12 @@ app.use(cookieParser("my-secret-key"));
 app.use(express.json());
 
 // enabling CORS for any unknown origin(https://xyz.example.com)
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://127.0.0.1:5500",
+    credentials: true,
+  }),
+);
 
 // Простой проверочный маршрут
 app.get("/health", (req, res) => {
@@ -118,13 +124,47 @@ app.get("/users/get", async (req, res) => {
 app.post("/user/signup", upload.none(), async (req, res) => {
   const id = uuidv4();
   const name = req.body.name;
-  const password = req.body.password;
+  let password = req.body.password;
   const email = req.body.email;
   const users = await readUsers();
+  password = await hashPassword(password);
   const user = { id, name, password, email };
   console.log(users);
   users.push(user);
   await writeUsers(users);
   console.log("Signup");
+  res.cookie("token", password, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+  res.cookie("nickname", name, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
   res.json({ result: "yes" });
+});
+
+app.post("/user/signin", upload.none(), async (req, res) => {
+  const email = req.body.email;
+  let password = req.body.password;
+  const users = await readUsers();
+  const user = users.find((user) => user.email === email);
+  if (user && verifyPassword(password, user.password)) {
+    res.cookie("token", user.password, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.cookie("nickname", user.name, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.json({ result: "yes" });
+    return;
+  }
+
+  res.json({ result: "no" });
 });
