@@ -69,12 +69,14 @@ app.post("/send", async (req, res) => {
   res.json({ result: "yes" });
 });
 
-app.post("/user/create", async (req, res) => {
+app.post("/user/create", upload.none(), async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
   const id = uuidv4();
+  const phone = req.body.phone;
+  const gender = req.body.gender;
   const users = await readUsers();
-  const user = { id, name, email };
+  const user = { id, name, email, gender, phone };
   users.push(user);
   await writeUsers(users);
   console.log("create");
@@ -92,7 +94,7 @@ app.put("/user/update", async (req, res) => {
   await writeUsers(users);
   res.json({ result: "yes" });
 });
-app.get("/user/get", async (req, res) => {
+app.get("/user/get", upload.none(), async (req, res) => {
   console.log("get");
   const id = req.body.id;
   const users = await readUsers();
@@ -100,9 +102,9 @@ app.get("/user/get", async (req, res) => {
   if (!user) {
     return res.status(404).json({ result: "User not found" });
   }
-  res.json({ result: "yes" });
+  res.json({ result: user });
 });
-app.delete("/user/delete", async (req, res) => {
+app.delete("/user/delete", upload.none(), async (req, res) => {
   console.log("delete");
   const id = req.body.id;
   const users = await readUsers();
@@ -110,7 +112,9 @@ app.delete("/user/delete", async (req, res) => {
   if (index !== -1) {
     const user = users.splice(index, 1);
     await writeUsers(users);
-    console.log(users);
+    console.log(`Пользователь ${id} был удалён`);
+  } else {
+    console.log(`Пользователь ${id} не найден`);
   }
   res.json({ result: "yes" });
 });
