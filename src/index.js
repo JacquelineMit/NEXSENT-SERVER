@@ -82,14 +82,16 @@ app.post("/user/create", upload.none(), async (req, res) => {
   console.log("create");
   res.json({ result: user });
 });
-app.put("/user/update", async (req, res) => {
+app.put("/user/update", upload.none(), async (req, res) => {
   console.log("update");
   const name = req.body.name;
   const email = req.body.email;
   const id = req.body.id;
+  const phone = req.body.phone;
+  const gender = req.body.gender;
   const users = await readUsers();
   const userIndex = users.findIndex((user) => user.id === id);
-  const updatedUser = { ...users[userIndex], name, email };
+  const updatedUser = { ...users[userIndex], name, email, gender, phone };
   users[userIndex] = updatedUser;
   await writeUsers(users);
   res.json({ result: "yes" });
