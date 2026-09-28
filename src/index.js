@@ -66,7 +66,7 @@ app.post("/send", async (req, res) => {
 
   console.log("Cookie is", req.cookies.name);
 
-  res.json({ result: "yes" });
+  res.json({ result: users });
 });
 
 app.post("/user/create", upload.none(), async (req, res) => {
@@ -80,7 +80,7 @@ app.post("/user/create", upload.none(), async (req, res) => {
   users.push(user);
   await writeUsers(users);
   console.log("create");
-  res.json({ result: user });
+  res.json({ result: users });
 });
 app.put("/user/update", upload.none(), async (req, res) => {
   console.log("update");
@@ -94,7 +94,7 @@ app.put("/user/update", upload.none(), async (req, res) => {
   const updatedUser = { ...users[userIndex], name, email, gender, phone };
   users[userIndex] = updatedUser;
   await writeUsers(users);
-  res.json({ result: "yes" });
+  res.json({ result: users });
 });
 app.get("/user/get", upload.none(), async (req, res) => {
   console.log("get");
@@ -118,7 +118,7 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
   } else {
     console.log(`Пользователь ${id} не найден`);
   }
-  res.json({ result: "yes" });
+  res.json({ result: users });
 });
 
 app.get("/users/get", async (req, res) => {
