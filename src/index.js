@@ -8,6 +8,24 @@ import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
 import { hashPassword, verifyPassword } from "./utils/password.js";
 
+const mysql = require("mysql2");
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "usersdb_2",
+  password: "парольСервера",
+});
+
+const sql = `create table if not exists users(
+  id int primary key auto_increment,
+  name varchar(100) not null,
+  email varchar(1000) not null,
+  phone varchar(10),
+  gender text not null
+  )`;
+
+connection.end();
 const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
