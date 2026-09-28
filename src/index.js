@@ -80,7 +80,7 @@ app.post("/user/create", upload.none(), async (req, res) => {
   users.push(user);
   await writeUsers(users);
   console.log("create");
-  res.json({ result: users });
+  res.json({ result: user });
 });
 app.put("/user/update", upload.none(), async (req, res) => {
   console.log("update");
@@ -94,7 +94,7 @@ app.put("/user/update", upload.none(), async (req, res) => {
   const updatedUser = { ...users[userIndex], name, email, gender, phone };
   users[userIndex] = updatedUser;
   await writeUsers(users);
-  res.json({ result: users });
+  res.json({ result: updatedUser });
 });
 app.get("/user/get", upload.none(), async (req, res) => {
   console.log("get");
