@@ -8,6 +8,9 @@ import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
 import { hashPassword, verifyPassword } from "./utils/password.js";
 import { Pool } from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const upload = multer();
 const app = express();
