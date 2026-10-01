@@ -7,25 +7,8 @@ import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
 import multer from "multer";
 import { hashPassword, verifyPassword } from "./utils/password.js";
+import { Pool } from "pg";
 
-const mysql = require("mysql2");
-
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  database: "usersdb_2",
-  password: "парольСервера",
-});
-
-const sql = `create table if not exists users(
-  id int primary key auto_increment,
-  name varchar(100) not null,
-  email varchar(1000) not null,
-  phone varchar(10),
-  gender text not null
-  )`;
-
-connection.end();
 const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -140,7 +123,6 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
 });
 
 app.get("/users/get", async (req, res) => {
-  console.log("get");
   const users = await readUsers();
   res.json({ result: users });
 });
