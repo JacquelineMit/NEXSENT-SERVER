@@ -12,6 +12,23 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+export const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// const result = await db.query(
+//   `
+//     INSERT INTO users (name, email)
+//     VALUES ($1, $2)
+//   `,
+//   ['Alex', 'alex@example.com'],
+// );
+
+// await db.query(
+//   'DELETE FROM users WHERE id = $1',
+//   [1],
+// );
+
 const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -74,12 +91,19 @@ app.post("/send", async (req, res) => {
 });
 
 app.post("/user/create", upload.none(), async (req, res) => {
+  const id = uuidv4();
   const name = req.body.name;
   const email = req.body.email;
-  const id = uuidv4();
   const phone = req.body.phone;
   const gender = req.body.gender;
   const users = await readUsers();
+  const create = await db.query(
+    `
+    INSERT INTO users (name, email, phone, gender)
+    VALUES ($1, $2, $3, $4)
+    `,
+    [name, email, phone, gender],
+  );
   const user = { id, name, email, gender, phone };
   users.push(user);
   await writeUsers(users);
@@ -115,6 +139,13 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
   const id = req.body.id;
   const users = await readUsers();
   const index = users.findIndex((user) => user.id === id);
+  await db.query(
+    `
+    DELETE FROM users
+    WHERE id = $1
+    `,
+    [id],
+  );
   if (index !== -1) {
     const user = users.splice(index, 1);
     await writeUsers(users);
@@ -126,8 +157,13 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
 });
 
 app.get("/users/get", async (req, res) => {
-  const users = await readUsers();
-  res.json({ result: users });
+  const result = await db.query(
+    `
+    SELECT * FROM users
+    `,
+  );
+  //const users = await readUsers();
+  res.json({ result: result.rows });
 });
 
 app.post("/user/signup", upload.none(), async (req, res) => {
