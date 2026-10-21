@@ -104,11 +104,6 @@ app.post("/user/create", upload.none(), async (req, res) => {
     `,
     [name, email, phone, gender],
   );
-  const user = { id, name, email, gender, phone };
-  users.push(user);
-  await writeUsers(users);
-  console.log("create");
-  res.json({ result: user });
 });
 app.put("/user/update", upload.none(), async (req, res) => {
   console.log("update");
@@ -117,22 +112,34 @@ app.put("/user/update", upload.none(), async (req, res) => {
   const id = req.body.id;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const users = await readUsers();
-  const userIndex = users.findIndex((user) => user.id === id);
-  const updatedUser = { ...users[userIndex], name, email, gender, phone };
-  users[userIndex] = updatedUser;
-  await writeUsers(users);
-  res.json({ result: updatedUser });
+  const update = await db.query(
+    `
+    UPDATE users 
+    SET name = $1,
+        email = $2,
+        phone = $3,
+        gender = $4
+    WHERE id = $5
+    `,
+    [name, email, phone, gender],
+  );
 });
 app.get("/user/get", upload.none(), async (req, res) => {
   console.log("get");
+  const name = req.body.name;
+  const email = req.body.email;
   const id = req.body.id;
-  const users = await readUsers();
-  const user = users.findIndex((user) => user.id === id);
-  if (!user) {
-    return res.status(404).json({ result: "User not found" });
-  }
-  res.json({ result: user });
+  const phone = req.body.phone;
+  const gender = req.body.gender;
+  const result = await db.query(
+    `
+    SELECT name, email, phone, gender FROM users
+    WHERE id = $1
+    `,
+    [name, email, phone, gender],
+  );
+  //const users = await readUsers();
+  res.json({ result: result.rows });
 });
 app.delete("/user/delete", upload.none(), async (req, res) => {
   console.log("delete");
@@ -146,14 +153,6 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
     `,
     [id],
   );
-  if (index !== -1) {
-    const user = users.splice(index, 1);
-    await writeUsers(users);
-    console.log(`Пользователь ${id} был удалён`);
-  } else {
-    console.log(`Пользователь ${id} не найден`);
-  }
-  res.json({ result: users });
 });
 
 app.get("/users/get", async (req, res) => {
