@@ -78,6 +78,10 @@ app.post("/send", async (req, res) => {
   res.json({ result: users });
 });
 
+app.get("/client/get", requireAuth, async (req, res) => {
+  res.json({});
+});
+
 app.post("/user/create", upload.none(), requireAuth, async (req, res) => {
   const id = uuidv4();
   const name = req.body.name;
