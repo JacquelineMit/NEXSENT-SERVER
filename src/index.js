@@ -96,7 +96,6 @@ app.post("/user/create", upload.none(), async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const users = await readUsers();
   const create = await db.query(
     `
     INSERT INTO users (name, email, phone, gender)
@@ -104,12 +103,13 @@ app.post("/user/create", upload.none(), async (req, res) => {
     `,
     [name, email, phone, gender],
   );
+  res.json({ result: create.rows[0] });
 });
 app.put("/user/update", upload.none(), async (req, res) => {
   console.log("update");
+  const id = req.body.id;
   const name = req.body.name;
   const email = req.body.email;
-  const id = req.body.id;
   const phone = req.body.phone;
   const gender = req.body.gender;
   const update = await db.query(
@@ -121,31 +121,29 @@ app.put("/user/update", upload.none(), async (req, res) => {
         gender = $4
     WHERE id = $5
     `,
-    [name, email, phone, gender],
+    [name, email, phone, gender, id],
   );
+  res.json({ result: update.rows });
 });
 app.get("/user/get", upload.none(), async (req, res) => {
   console.log("get");
+  const id = req.body.id;
   const name = req.body.name;
   const email = req.body.email;
-  const id = req.body.id;
   const phone = req.body.phone;
   const gender = req.body.gender;
   const result = await db.query(
     `
-    SELECT name, email, phone, gender FROM users
+    SELECT id, name, email, phone, gender FROM users
     WHERE id = $1
     `,
-    [name, email, phone, gender],
+    [id, name, email, phone, gender],
   );
-  //const users = await readUsers();
   res.json({ result: result.rows });
 });
 app.delete("/user/delete", upload.none(), async (req, res) => {
   console.log("delete");
   const id = req.body.id;
-  const users = await readUsers();
-  const index = users.findIndex((user) => user.id === id);
   await db.query(
     `
     DELETE FROM users
@@ -153,6 +151,12 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
     `,
     [id],
   );
+  const result = await db.query(
+    `
+    SELECT * FROM users
+    `,
+  );
+  res.json({ result: result.rows });
 });
 
 app.get("/users/get", async (req, res) => {
