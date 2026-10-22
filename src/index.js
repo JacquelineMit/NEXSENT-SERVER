@@ -9,6 +9,7 @@ import multer from "multer";
 import { hashPassword, verifyPassword } from "./utils/password.js";
 import { Pool } from "pg";
 import dotenv from "dotenv";
+import { requireAuth } from "./middleware/requireAuth.js";
 
 dotenv.config();
 
@@ -77,7 +78,7 @@ app.post("/send", async (req, res) => {
   res.json({ result: users });
 });
 
-app.post("/user/create", upload.none(), async (req, res) => {
+app.post("/user/create", upload.none(), requireAuth, async (req, res) => {
   const id = uuidv4();
   const name = req.body.name;
   const email = req.body.email;
@@ -92,7 +93,7 @@ app.post("/user/create", upload.none(), async (req, res) => {
   );
   res.json({ result: create.rows[0] });
 });
-app.put("/user/update", upload.none(), async (req, res) => {
+app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
   console.log("update");
   const id = req.body.id;
   const name = req.body.name;
@@ -112,7 +113,7 @@ app.put("/user/update", upload.none(), async (req, res) => {
   );
   res.json({ result: update.rows });
 });
-app.get("/user/get", upload.none(), async (req, res) => {
+app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   console.log("get");
   const id = req.body.id;
   const name = req.body.name;
@@ -128,7 +129,7 @@ app.get("/user/get", upload.none(), async (req, res) => {
   );
   res.json({ result: result.rows });
 });
-app.delete("/user/delete", upload.none(), async (req, res) => {
+app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
   console.log("delete");
   const id = req.body.id;
   await db.query(
@@ -146,7 +147,7 @@ app.delete("/user/delete", upload.none(), async (req, res) => {
   res.json({ result: result.rows });
 });
 
-app.get("/users/get", async (req, res) => {
+app.get("/users/get", requireAuth, async (req, res) => {
   const result = await db.query(
     `
     SELECT * FROM users
