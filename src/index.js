@@ -16,19 +16,6 @@ export const db = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// const result = await db.query(
-//   `
-//     INSERT INTO users (name, email)
-//     VALUES ($1, $2)
-//   `,
-//   ['Alex', 'alex@example.com'],
-// );
-
-// await db.query(
-//   'DELETE FROM users WHERE id = $1',
-//   [1],
-// );
-
 const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
