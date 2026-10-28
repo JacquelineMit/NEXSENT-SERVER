@@ -36,6 +36,10 @@ app.use(
   }),
 );
 
+app.get("/autho/me", requireAuth, (req, res) => {
+  res.json({ result: { nickname: req.cookies.nickname || null } });
+});
+
 // Простой проверочный маршрут
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
