@@ -10,8 +10,14 @@ import { hashPassword, verifyPassword } from "./utils/password.js";
 import { Pool } from "pg";
 import dotenv from "dotenv";
 import { requireAuth } from "./middleware/requireAuth.js";
+import { SqlDbController } from "./services/UsersService/SqlDbController.js";
+import { UserService } from "./services/UsersService/index.js";
+import { MyDbController } from "./services/UsersService/MyDbController.js";
 
 dotenv.config();
+
+let dbController = new MyDbController();
+let userService = new UserService(dbController);
 
 export const db = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -37,6 +43,7 @@ app.use(
 );
 
 app.get("/autho/me", requireAuth, (req, res) => {
+  console.log("CHECK IT");
   res.json({ result: { nickname: req.cookies.nickname || null } });
 });
 
@@ -87,19 +94,12 @@ app.get("/client/get", requireAuth, async (req, res) => {
 });
 
 app.post("/user/create", upload.none(), requireAuth, async (req, res) => {
-  const id = uuidv4();
   const name = req.body.name;
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const create = await db.query(
-    `
-    INSERT INTO users (name, email, phone, gender)
-    VALUES ($1, $2, $3, $4)
-    `,
-    [name, email, phone, gender],
-  );
-  res.json({ result: create.rows[0] });
+  const user = userService.create(name, email, phone, gender);
+  res.json({ result: user });
 });
 app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
   console.log("update");
