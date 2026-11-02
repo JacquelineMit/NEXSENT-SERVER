@@ -9,7 +9,21 @@ export class UserService {
     return result;
   }
 
-  async update() {}
+  async update(name, email, phone, gender, id) {
+    const result = await this.dbController.update(
+      name,
+      email,
+      phone,
+      gender,
+      id,
+    );
+    console.log("UserService: update, result is ", result);
+    return result;
+  }
 
-  async delete() {}
+  async delete(id) {
+    const result = await this.dbController.delete(id);
+    console.log("UserService: delete, result is ", result);
+    return result;
+  }
 }

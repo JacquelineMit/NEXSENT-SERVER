@@ -12,11 +12,11 @@ import dotenv from "dotenv";
 import { requireAuth } from "./middleware/requireAuth.js";
 import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 import { UserService } from "./services/UsersService/index.js";
-import { MyDbController } from "./services/UsersService/MyDbController.js";
+import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 
 dotenv.config();
 
-let dbController = new MyDbController();
+let dbController = new SqlDbController();
 let userService = new UserService(dbController);
 
 export const db = new Pool({
@@ -108,18 +108,8 @@ app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const update = await db.query(
-    `
-    UPDATE users 
-    SET name = $1,
-        email = $2,
-        phone = $3,
-        gender = $4
-    WHERE id = $5
-    `,
-    [name, email, phone, gender, id],
-  );
-  res.json({ result: update.rows });
+  const user = userService.update(name, email, phone, gender, id);
+  res.json({ result: user });
 });
 app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   console.log("get");
@@ -140,19 +130,8 @@ app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
 app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
   console.log("delete");
   const id = req.body.id;
-  await db.query(
-    `
-    DELETE FROM users
-    WHERE id = $1
-    `,
-    [id],
-  );
-  const result = await db.query(
-    `
-    SELECT * FROM users
-    `,
-  );
-  res.json({ result: result.rows });
+  const user = userService.delete(id);
+  res.json({ result: user });
 });
 
 app.get("/users/get", requireAuth, async (req, res) => {

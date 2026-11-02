@@ -28,7 +28,43 @@ export class SqlDbController {
     };
   }
 
-  async update() {}
+  async update(name, email, phone, gender, id) {
+    console.log("SqlDbController: update");
+    const result = await this.db.query(
+      `
+      UPDATE users 
+      SET name = $1, 
+      email = $2,
+      phone = $3,
+      gender = $4,
+      WHERE id = $5
+      `,
+      [name, email, phone, gender, id],
+    );
+    const data = result.rows[0];
 
-  async delete() {}
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      gender: data.gender,
+    };
+  }
+
+  async delete(id) {
+    console.log("SqlDbController: delete");
+    const result = await this.db.query(
+      `
+      DELETE FROM users
+      WHERE id = $1
+      `,
+      [id],
+    );
+    const data = result.rows[0];
+
+    return {
+      id: data.id,
+    };
+  }
 }
