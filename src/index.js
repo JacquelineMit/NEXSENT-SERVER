@@ -16,11 +16,6 @@ import { Logger } from "./utils/Logger.js";
 
 dotenv.config();
 
-let logger1 = Logger.new();
-let logger2 = Logger.new();
-
-console.log("logger1 == logger2 is", logger1 == logger2);
-
 let dbController = new SqlDbController();
 let userService = new UserService(dbController);
 
@@ -58,7 +53,7 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  Logger.new().log(`Сервер запущен на порту ${PORT}`);
 });
 
 const usersDb = path.resolve("db/users.json");

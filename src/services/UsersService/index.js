@@ -1,3 +1,5 @@
+import { hashPassword, verifyPassword } from "../../utils/password.js";
+
 export class UserService {
   constructor(dbController) {
     this.dbController = dbController;
@@ -26,4 +28,16 @@ export class UserService {
     console.log("UserService: delete, result is ", result);
     return result;
   }
+
+  async signup(name, email, password) {
+    password = await hashPassword(password);
+    const userResult = await this.create(name, email);
+    const passwordResult = await this.dbController.makePassword(
+      userResult.id,
+      password,
+    );
+    return { userResult, passwordResult };
+  }
+
+  async signin(email, password) {}
 }

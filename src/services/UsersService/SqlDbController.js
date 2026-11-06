@@ -67,4 +67,21 @@ export class SqlDbController {
       id: data.id,
     };
   }
+
+  async makePassword(id, password) {
+    const result = await this.db.query(
+      `
+      INSERT INTO users_password (id, password)
+        VALUES ($1, $2)
+        RETURNING id, password
+      `,
+      [id, password],
+    );
+    const data = result.rows[0];
+
+    return {
+      id: data.id,
+      password: data.password,
+    };
+  }
 }
