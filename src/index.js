@@ -84,8 +84,6 @@ app.post("/send", async (req, res) => {
     sameSite: "lax",
   });
 
-  console.log("Cookie is", req.cookies.name);
-
   res.json({ result: users });
 });
 
@@ -101,8 +99,8 @@ app.post("/user/create", upload.none(), requireAuth, async (req, res) => {
   const user = userService.create(name, email, phone, gender);
   res.json({ result: user });
 });
+
 app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
-  console.log("update");
   const id = req.body.id;
   const name = req.body.name;
   const email = req.body.email;
@@ -111,6 +109,7 @@ app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
   const user = userService.update(name, email, phone, gender, id);
   res.json({ result: user });
 });
+
 app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   console.log("get");
   const id = req.body.id;
@@ -127,6 +126,7 @@ app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   );
   res.json({ result: result.rows });
 });
+
 app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
   console.log("delete");
   const id = req.body.id;
@@ -140,7 +140,7 @@ app.get("/users/get", requireAuth, async (req, res) => {
     SELECT * FROM users
     `,
   );
-  //const users = await readUsers();
+
   res.json({ result: result.rows });
 });
 
@@ -152,10 +152,9 @@ app.post("/user/signup", upload.none(), async (req, res) => {
   const users = await readUsers();
   password = await hashPassword(password);
   const user = { id, name, password, email };
-  console.log(users);
   users.push(user);
   await writeUsers(users);
-  console.log("Signup");
+
   res.cookie("token", password, {
     httpOnly: true,
     secure: false,
