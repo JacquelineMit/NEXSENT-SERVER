@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import { requireAuth } from "./middleware/requireAuth.js";
 import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 import { UserService } from "./services/UsersService/index.js";
+import { Logger } from "./utils/Logger/Logger.js";
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ export const db = new Pool({
 const upload = multer();
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+Logger.setConsoleLogger();
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,7 +55,7 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
+  Logger.log(`Сервер запущен на порту ${PORT}`);
 });
 
 const usersDb = path.resolve("db/users.json");
