@@ -12,7 +12,6 @@ import dotenv from "dotenv";
 import { requireAuth } from "./middleware/requireAuth.js";
 import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 import { UserService } from "./services/UsersService/index.js";
-import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 
 dotenv.config();
 
