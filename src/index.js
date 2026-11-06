@@ -12,8 +12,14 @@ import dotenv from "dotenv";
 import { requireAuth } from "./middleware/requireAuth.js";
 import { SqlDbController } from "./services/UsersService/SqlDbController.js";
 import { UserService } from "./services/UsersService/index.js";
+import { Logger } from "./utils/Logger.js";
 
 dotenv.config();
+
+let logger1 = Logger.new();
+let logger2 = Logger.new();
+
+console.log("logger1 == logger2 is", logger1 == logger2);
 
 let dbController = new SqlDbController();
 let userService = new UserService(dbController);
