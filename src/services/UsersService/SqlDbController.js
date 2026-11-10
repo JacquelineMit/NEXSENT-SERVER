@@ -68,6 +68,35 @@ export class SqlDbController {
     };
   }
 
+  async get(id, name, email, phone, gender) {
+    console.log("SqlDbController: get");
+    const result = await this.db.query(
+      `
+      SELECT id, name, email, phone, gender FROM users
+      WHERE id = $1
+      `,
+      [id, name, email, phone, gender],
+    );
+    const data = result.rows[0];
+
+    return {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      gender: data.gender,
+    };
+  }
+
+  async getAll() {
+    console.log("SqlDbController: get all");
+    const result = await this.db.query(
+      `
+      SELECT * FROM users
+      `,
+    );
+  }
+
   async makePassword(id, password) {
     const result = await this.db.query(
       `

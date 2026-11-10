@@ -117,14 +117,8 @@ app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const result = await db.query(
-    `
-    SELECT id, name, email, phone, gender FROM users
-    WHERE id = $1
-    `,
-    [id, name, email, phone, gender],
-  );
-  res.json({ result: result.rows });
+  const user = userService.get(name, email, phone, gender, id);
+  res.json({ result: user });
 });
 
 app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
