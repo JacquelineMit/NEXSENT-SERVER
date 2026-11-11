@@ -139,15 +139,10 @@ app.get("/users/get", requireAuth, async (req, res) => {
 });
 
 app.post("/user/signup", upload.none(), async (req, res) => {
-  const id = uuidv4();
   const name = req.body.name;
   let password = req.body.password;
   const email = req.body.email;
-  const users = await readUsers();
-  password = await hashPassword(password);
-  const user = { id, name, password, email };
-  users.push(user);
-  await writeUsers(users);
+  const user = userService.signup(name, email, password);
 
   res.cookie("token", password, {
     httpOnly: true,

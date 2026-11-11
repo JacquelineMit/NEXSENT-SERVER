@@ -95,6 +95,7 @@ export class SqlDbController {
       SELECT * FROM users
       `,
     );
+    const data = result.rows[0];
   }
 
   async makePassword(id, password) {
