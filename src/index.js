@@ -96,7 +96,7 @@ app.post("/user/create", upload.none(), requireAuth, async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const user = userService.create(name, email, phone, gender);
+  const user = await userService.create(name, email, phone, gender);
   res.json({ result: user });
 });
 
@@ -106,7 +106,7 @@ app.put("/user/update", upload.none(), requireAuth, async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const user = userService.update(name, email, phone, gender, id);
+  const user = await userService.update(name, email, phone, gender, id);
   res.json({ result: user });
 });
 
@@ -117,14 +117,14 @@ app.get("/user/get", upload.none(), requireAuth, async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const gender = req.body.gender;
-  const user = userService.get(name, email, phone, gender, id);
+  const user = await userService.get(name, email, phone, gender, id);
   res.json({ result: user });
 });
 
 app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
   console.log("delete");
   const id = req.body.id;
-  const user = userService.delete(id);
+  const user = await userService.delete(id);
   res.json({ result: user });
 });
 
@@ -142,9 +142,9 @@ app.post("/user/signup", upload.none(), async (req, res) => {
   const name = req.body.name;
   let password = req.body.password;
   const email = req.body.email;
-  const user = userService.signup(name, email, password);
+  const result = await userService.signup(name, email, password);
 
-  res.cookie("token", password, {
+  res.cookie("token", result.passwordResult, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",

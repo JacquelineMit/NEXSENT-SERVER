@@ -68,14 +68,14 @@ export class SqlDbController {
     };
   }
 
-  async get(id, name, email, phone, gender) {
+  async get(id) {
     console.log("SqlDbController: get");
     const result = await this.db.query(
       `
       SELECT id, name, email, phone, gender FROM users
       WHERE id = $1
       `,
-      [id, name, email, phone, gender],
+      [id],
     );
     const data = result.rows[0];
 
@@ -95,23 +95,49 @@ export class SqlDbController {
       SELECT * FROM users
       `,
     );
-    const data = result.rows[0];
+    const data = result.rows;
+    return data;
   }
 
-  async makePassword(id, password) {
+  async savePassword(id, password, createdAt) {
     const result = await this.db.query(
       `
-      INSERT INTO users_password (id, password)
-        VALUES ($1, $2)
-        RETURNING id, password
+      INSERT INTO users_passwords (user_id, password, created_at, updated_at)
+        VALUES ($1, $2, $3, $4)
+        RETURNING user_id, password, created_at, updated_at
       `,
-      [id, password],
+      [id, password, createdAt, createdAt],
     );
     const data = result.rows[0];
 
     return {
-      id: data.id,
+      id: data.user_id,
       password: data.password,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
     };
+  }
+
+  async getUserIdByEmail(email) {
+    const result = await this.db.query(
+      `
+      SELECT id FROM users
+      WHERE email = $1
+      `,
+      [email],
+    );
+
+    return result.rows[0].id;
+  }
+
+  async getUserPasswordById(id) {
+    const result = await this.db.query(
+      `
+      SELECT password FROM users_passwords
+      WHERE user_id = $1
+      `,
+      [id],
+    );
+    return result.rows[0].password;
   }
 }

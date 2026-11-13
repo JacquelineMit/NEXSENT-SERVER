@@ -32,12 +32,23 @@ export class UserService {
   async signup(name, email, password) {
     password = await hashPassword(password);
     const userResult = await this.create(name, email);
-    const passwordResult = await this.dbController.makePassword(
+    const timestamp = new Date();
+    const passwordResult = await this.dbController.savePassword(
       userResult.id,
       password,
+      timestamp,
     );
     return { userResult, passwordResult };
   }
 
-  async signin(email, password) {}
+  async signin(email, password) {
+    password = await hashPassword(password);
+    const userId = await this.dbController.getUserIdByEmail(email);
+    const userResult = await this.dbController.get(userId);
+    const userPassword = await this.dbController.getUserPasswordById(userId);
+    if (userPassword == password) {
+      return { userResult, passwordResult };
+    }
+    return false;
+  }
 }
