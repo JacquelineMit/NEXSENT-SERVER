@@ -42,13 +42,18 @@ export class UserService {
   }
 
   async signin(email, password) {
-    password = await hashPassword(password);
     const userId = await this.dbController.getUserIdByEmail(email);
+
+    if (!userId) return false;
+
     const userResult = await this.dbController.get(userId);
-    const userPassword = await this.dbController.getUserPasswordById(userId);
-    if (userPassword == password) {
-      return { userResult, passwordResult };
-    }
-    return false;
+    const passwordResult = await this.dbController.getUserPasswordById(userId);
+
+    if (!userResult || !passwordResult) return false;
+
+    const isValid = await verifyPassword(password, passwordResult);
+    if (!isValid) return false;
+
+    return { userResult, passwordResult };
   }
 }

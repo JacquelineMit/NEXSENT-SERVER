@@ -127,7 +127,7 @@ export class SqlDbController {
       [email],
     );
 
-    return result.rows[0].id;
+    return result.rows[0]?.id ?? null;
   }
 
   async getUserPasswordById(id) {
@@ -138,6 +138,6 @@ export class SqlDbController {
       `,
       [id],
     );
-    return result.rows[0].password;
+    return result.rows[0]?.password ?? null;
   }
 }

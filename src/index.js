@@ -129,12 +129,7 @@ app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
 });
 
 app.get("/users/get", requireAuth, async (req, res) => {
-  const result = await db.query(
-    `
-    SELECT * FROM users
-    `,
-  );
-
+  const result = await userService.getAll();
   res.json({ result: result.rows });
 });
 
@@ -160,22 +155,23 @@ app.post("/user/signup", upload.none(), async (req, res) => {
 app.post("/user/signin", upload.none(), async (req, res) => {
   const email = req.body.email;
   let password = req.body.password;
-  const users = await readUsers();
-  const user = users.find((user) => user.email === email);
-  if (user && verifyPassword(password, user.password)) {
-    res.cookie("token", user.password, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
-    res.cookie("nickname", user.name, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
-    res.json({ result: "yes" });
-    return;
+  const result = await userService.signin(email, password);
+
+  if (!result) {
+    return res.json({ result: "no" });
   }
 
-  res.json({ result: "no" });
+  res.cookie("token", result.passwordResult, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
+  res.cookie("nickname", result.userResult.name, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
+  return res.json({ result: "yes" });
 });
