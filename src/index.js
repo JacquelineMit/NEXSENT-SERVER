@@ -130,7 +130,8 @@ app.delete("/user/delete", upload.none(), requireAuth, async (req, res) => {
 
 app.get("/users/get", requireAuth, async (req, res) => {
   const result = await userService.getAll();
-  res.json({ result: result.rows });
+  console.log(result);
+  res.json({ result });
 });
 
 app.post("/user/signup", upload.none(), async (req, res) => {
@@ -158,6 +159,7 @@ app.post("/user/signin", upload.none(), async (req, res) => {
   const result = await userService.signin(email, password);
 
   if (!result) {
+    res.statusCode = 401;
     return res.json({ result: "no" });
   }
 

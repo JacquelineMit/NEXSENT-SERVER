@@ -138,6 +138,7 @@ export class SqlDbController {
       `,
       [id],
     );
+
     return result.rows[0]?.password ?? null;
   }
 }

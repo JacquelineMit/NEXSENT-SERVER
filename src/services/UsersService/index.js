@@ -29,6 +29,12 @@ export class UserService {
     return result;
   }
 
+  async getAll() {
+    const result = await this.dbController.getAll();
+    console.log("UserService: get all, result is ", result);
+    return result;
+  }
+
   async signup(name, email, password) {
     password = await hashPassword(password);
     const userResult = await this.create(name, email);
@@ -47,9 +53,10 @@ export class UserService {
     if (!userId) return false;
 
     const userResult = await this.dbController.get(userId);
-    const passwordResult = await this.dbController.getUserPasswordById(userId);
+    if (!userResult) return false;
 
-    if (!userResult || !passwordResult) return false;
+    const passwordResult = await this.dbController.getUserPasswordById(userId);
+    if (!passwordResult) return false;
 
     const isValid = await verifyPassword(password, passwordResult);
     if (!isValid) return false;
