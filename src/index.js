@@ -64,7 +64,7 @@ app.use(
   }),
 );
 
-app.get("/autho/me", requireAuth, (req, res) => {
+app.get("/autho/me", auth, (req, res) => {
   console.log("CHECK IT");
   res.json({
     authenticated: true,
