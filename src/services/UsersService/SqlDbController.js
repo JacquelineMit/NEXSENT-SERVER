@@ -141,4 +141,21 @@ export class SqlDbController {
 
     return result.rows[0]?.password ?? null;
   }
+
+  async getUserByToken(token) {
+    const result = await this.db.query(
+      `
+      SELECT id, name, email
+      FROM users
+      WHERE id IN (
+      SELECT user_id
+      FROM users_passwords
+      WHERE password = $1
+      )
+      LIMIT 1
+      `,
+      [token],
+    );
+    return result.rows[0] ?? null;
+  }
 }

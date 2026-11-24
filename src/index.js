@@ -31,6 +31,28 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser("my-secret-key"));
 
+const auth = async (req, res, next) => {
+  const token = req.cookies?.token;
+
+  if (!token) {
+    return res.status(401).json({ authenticated: false });
+  }
+
+  try {
+    const user = await dbController.getUserByToken(token);
+
+    if (!user) {
+      return res.status(401).json({ authenticated: false });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Ошибка проверки авторизации:", error);
+    res.status(500).json({ authenticated: false });
+  }
+};
+
 // Middleware для парсинга JSON в теле запроса
 app.use(express.json());
 
@@ -44,7 +66,10 @@ app.use(
 
 app.get("/autho/me", requireAuth, (req, res) => {
   console.log("CHECK IT");
-  res.json({ result: { nickname: req.cookies.nickname || null } });
+  res.json({
+    authenticated: true,
+    nickname: req.user.name,
+  });
 });
 
 // Простой проверочный маршрут
